@@ -1,30 +1,63 @@
 require('dotenv').config();
-mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
+async function connectToMongo() {
+  try {
+    await mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
+    console.log("Connected to MongoDB successfully.");
 
+    const Schema = mongoose.Schema;
 
+    const personSchema = new Schema({
+      name: { type: String, required: true },
+      age: Number,
+      favoriteFoods: [String]
+    });
 
+    const Person = mongoose.model("Person", personSchema);
 
-mongoose.connect(process.env.MONGO, { useNewUrlParser: true, useUnifiedTopology: true });
+    const small = new Person({ name: 'small', age: 20, favoriteFoods: ['pizza', 'pasta'] });
 
-// const { Schema } = mongoose;
+    await small.save();
+    console.log(small);
+    exports.PersonModel = Person;
 
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
+}
 
-const personSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // String is shorthand for {type: String}
-  age: Number,
-  favoriteFoods: [String],
-});
+connectToMongo();
 
-const Person = mongoose.model("person", personSchema)
+// let createAndSavePerson = function (done) {
+//   const janeFonda = new Person({ name: "Jane Fonda", age: 84, favoriteFoods: ["eggs", "fish", "fresh fruit"] });
 
-// const createAndSavePerson = (done) => {
-//   done(null /*, data*/);
+//   janeFonda.save(function (err, data) {
+//     if (err) return console.error(err);
+//     done(null, data)
+
+//   });
+
 // };
+
+// arrayOfPeople = { name: "Frankie", age: 74, favoriteFoods: ["Del Taco"] },
+//   { name: "Sol", age: 76, favoriteFoods: ["roast chicken"] },
+//   { name: "Robert", age: 78, favoriteFoods: ["wine"] }
+
 
 // const createManyPeople = (arrayOfPeople, done) => {
-//   done(null /*, data*/);
-// };
+
+//   Person.create(arrayOfPeople, (err, data) => {
+
+
+//     if (err) return console.error(err);
+//     done(null, data)
+//   })
+
+
+
+// done(null /*, data*/);
+// }
 
 // const findPeopleByName = (personName, done) => {
 //   done(null /*, data*/);
@@ -72,7 +105,6 @@ const Person = mongoose.model("person", personSchema)
 
 //----- **DO NOT EDIT BELOW THIS LINE** ----------------------------------
 
-exports.PersonModel = Person;
 // exports.createAndSavePerson = createAndSavePerson;
 // exports.findPeopleByName = findPeopleByName;
 // exports.findOneByFood = findOneByFood;
